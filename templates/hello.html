@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Hello from Flask</title>
+    </head>
+    <body>
+    {% if name %}
+    <h1>Hello {{ name }}!</h1>
+    {% else %}
+    <h1>Hello World!</h1>
+    {% endif %}
+    <h1>{{ html }}</h1>
+    <h1>{{ safe_html|safe }}</h1>
+    <ul>
+        <li><pre>{{ config }}</pre></li>
+        <li><pre>{{ request }}</pre></li>
+        <li><pre>{{ session }}</pre></li>
+        <li><pre>{{ g }}</pre></li>
+        <li><pre>{{ url_for('show_post', post_id=1234) }}</pre></li>
+        <li><pre>{{ get_flashed_messages() }}</pre></li>
+    </ul>
+    </body>
+</html>
