@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask
-from flask import url_for
+from flask import abort, redirect, url_for
 from flask import request
 from flask import render_template
+from flask import make_response
 from markupsafe import escape
 from markupsafe import Markup
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -50,9 +53,30 @@ def about():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        # access form data
+        print(request.form)  # form data
+        #print(request.form['username'])
+        #print(request.form['password'])
         return "do login"
     else:
-        return "show login form"
+        print(request.args)  # query string
+        print(request.cookies)  # cookie
+        resp = make_response("show login form")
+        resp.set_cookie("username", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        return resp
+
+
+@app.get("/m/login")
+def m_login():
+    if not request.args.get('name'):
+        abort(401)
+    return redirect(url_for("login"))
+
+
+@app.errorhandler(404)
+def not_found(error):
+    # 最后一404表示这个页面的HTTP Status Code应该是404，如果不传将会是200
+    return render_template('404.html', error=error), 404
 
 
 @app.get("/get/user")
@@ -63,6 +87,17 @@ def get_user():
 @app.post("/post/user")
 def post_user():
     return "post user"
+
+
+@app.route("/upload",  methods=["GET", "POST"])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['the_file']
+        f.save('D:/tmp/uploaded_file.txt')
+        print(secure_filename(f.filename))
+        return 'upload success'
+    else:
+        return render_template('upload.html')
 
 
 with app.test_request_context():
