@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Login</title>
+        <style>
+            .error { color: red; }
+        </style>
+    </head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="error">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <form method="post" action="{{ url_for('login_page.login') }}" enctype="multipart/form-data">
+            <label for="username">Username: </label>
+            <input type="text" id="username" name="username" required placeholder="input username"/><br/>
+            <label for="password">Password: </label>
+            <input type="password" id="password" name="password" required placeholder="input password"/><br/>
+            <input type="reset" name="Reset"/>
+            <input type="submit" name="Submit"/>
+        </form>
+    </body>
+</html>

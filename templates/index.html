@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Application</title>
+        <style>
+            .name { color: blue; }
+        </style>
+    </head>
+    <body>
+        <h1>Logged in as {{ session['username'] }} at {{ request.cookies['login_time'] }}</h1>
+        <a href="{{ url_for('login_page.logout') }}">Logout</a>
+    </body>
+</html>

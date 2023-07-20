@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask
-from flask import abort, redirect, url_for
-from flask import request
-from flask import render_template
-from flask import make_response
-from markupsafe import escape
-from markupsafe import Markup
+from flask import Flask, abort, redirect, url_for, request, render_template
+from markupsafe import escape, Markup
 from werkzeug.utils import secure_filename
-from datetime import datetime
 
+from index import index_page
+from login import login_page
 
 app = Flask(__name__)
 
 
-@app.route("/")
-def index():
-    return 'Index Page'
+# python -c 'import secrets; print(secrets.token_hex())'
+app.secret_key = b'17b753b771fc89b6128e590a009c06a2fbb0be37992841860d6452ac2f80b9fa'
+app.register_blueprint(index_page)
+app.register_blueprint(login_page)
+
+# @app.route("/")
+# def index():
+#     return 'Index Page'
 
 
 @app.route("/hello/")
@@ -50,20 +51,20 @@ def about():
     return "The about page"
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        # access form data
-        print(request.form)  # form data
-        #print(request.form['username'])
-        #print(request.form['password'])
-        return "do login"
-    else:
-        print(request.args)  # query string
-        print(request.cookies)  # cookie
-        resp = make_response("show login form")
-        resp.set_cookie("username", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        return resp
+# @app.route("/login", methods=["GET", "POST"])
+# def login():
+#     if request.method == "POST":
+#         # access form data
+#         print(request.form)  # form data
+#         #print(request.form['username'])
+#         #print(request.form['password'])
+#         return "do login"
+#     else:
+#         print(request.args)  # query string
+#         print(request.cookies)  # cookie
+#         resp = make_response("show login form")
+#         resp.set_cookie("username", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+#         return resp
 
 
 @app.get("/m/login")
@@ -100,18 +101,43 @@ def upload_file():
         return render_template('upload.html')
 
 
+@app.get("/me")
+def me_api():
+    return {
+        "name": "yang",
+        "birthday": "1997-01-01",
+        "image": "https://www.example.com/avatar.png"
+    }
+
+
+@app.get("/users")
+def users_api():
+    return [
+        {
+            "name": "yang",
+            "birthday": "1997-01-01",
+            "image": "https://www.example.com/avatar_yang.png"
+        },
+        {
+            "name": "qian",
+            "birthday": "1997-02-01",
+            "image": "https://www.example.com/avatar_qian.png"
+        }
+    ]
+
+
 with app.test_request_context():
-    print(url_for('index'))
-    print(url_for('hello'))
-    print(url_for('hello', name='John Doe'))
-    print(url_for('show_post', post_id=15))
-    print(url_for('show_subpath', subpath='foo/bar'))
-    print(url_for('projects'))
-    print(url_for('about'))
-    print(url_for('static', filename='style.css'))
-    print(Markup('<strong> Hello %s!</strong>') % '<blink>hacker</blink>')
-    print(Markup.escape('<blink>hacker</blink>'))
-    print(Markup('<em>Marked up</em> &raquo; HTML').striptags())
+    app.logger.debug(url_for('index_page.index'))
+    app.logger.info(url_for('hello'))
+    app.logger.warning(url_for('hello', name='John Doe'))
+    app.logger.error(url_for('show_post', post_id=15))
+    app.logger.debug(url_for('show_subpath', subpath='foo/bar'))
+    app.logger.info(url_for('projects'))
+    app.logger.warning(url_for('about'))
+    app.logger.error(url_for('static', filename='style.css'))
+    app.logger.debug(Markup('<strong> Hello %s!</strong>') % '<blink>hacker</blink>')
+    app.logger.info(Markup.escape('<blink>hacker</blink>'))
+    app.logger.warning(Markup('<em>Marked up</em> &raquo; HTML').striptags())
 
 
 if __name__ == '__main__':
